@@ -25,6 +25,8 @@ dist
 dist-ssr
 build
 *.local
+.vercel
+.vercel/
 
 # Environment variables
 .env
