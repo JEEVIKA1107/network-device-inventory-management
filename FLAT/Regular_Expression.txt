@@ -1,0 +1,30 @@
+================================================================================
+NETTRACK DFA - CANONICAL IPv4 REGULAR EXPRESSION & LANGUAGE SPECIFICATION
+================================================================================
+Academic Mapping: FLAT Unit 2 (Regular Languages & Expressions) / CN Unit 3 (IPv4)
+
+CANONICAL REGULAR EXPRESSION:
+^(?:(?:25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])\.){3}(?:25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])$
+
+FORMAL LANGUAGE DEFINITION:
+L = { a.b.c.d | a, b, c, d ∈ ℕ, 0 <= a,b,c,d <= 255 }
+In canonical decimal format:
+- Exactly 4 octets separated by 3 dots.
+- No leading zeros permitted, except the standalone single digit '0'.
+- Octet range [0, 255] is partitioned into five sub-ranges:
+  1) 0             : Single '0'
+  2) 1 - 9         : [1-9]
+  3) 10 - 99       : [1-9][0-9]
+  4) 100 - 199     : 1[0-9]{2}
+  5) 200 - 249     : 2[0-4][0-9]
+  6) 250 - 255     : 25[0-5]
+
+INPUT ALPHABET:
+Sigma = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.' }
+
+TOTAL NUMBER OF DFA STATES:
+- Start State: S_1
+- Trap/Dead State: TRAP_DEAD
+- Total States in Minimized DFA: 25
+- Number of Accepting States: 5
+================================================================================
