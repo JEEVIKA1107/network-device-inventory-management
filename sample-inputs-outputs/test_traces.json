@@ -1,0 +1,44 @@
+[
+  {
+    "name": "Valid Gateway IP Trace",
+    "input": "192.168.1.1",
+    "result": "ACCEPTED",
+    "finalState": "O4_1",
+    "steps": [
+      { "step": 1, "char": "1", "from": "S_1", "to": "O1_1" },
+      { "step": 2, "char": "9", "from": "O1_1", "to": "O1_1X" },
+      { "step": 3, "char": "2", "from": "O1_1X", "to": "O1_1XX" },
+      { "step": 4, "char": ".", "from": "O1_1XX", "to": "S_2" },
+      { "step": 5, "char": "1", "from": "S_2", "to": "O2_1" },
+      { "step": 6, "char": "6", "from": "O2_1", "to": "O2_1X" },
+      { "step": 7, "char": "8", "from": "O2_1X", "to": "O2_1XX" },
+      { "step": 8, "char": ".", "from": "O2_1XX", "to": "S_3" },
+      { "step": 9, "char": "1", "from": "S_3", "to": "O3_1" },
+      { "step": 10, "char": ".", "from": "O3_1", "to": "S_4" },
+      { "step": 11, "char": "1", "from": "S_4", "to": "O4_1" }
+    ]
+  },
+  {
+    "name": "Octet Overflow (>255) Rejection Trace",
+    "input": "256.168.1.1",
+    "result": "REJECTED",
+    "finalState": "TRAP_DEAD",
+    "steps": [
+      { "step": 1, "char": "2", "from": "S_1", "to": "O1_2" },
+      { "step": 2, "char": "5", "from": "O1_2", "to": "O1_2_5" },
+      { "step": 3, "char": "6", "from": "O1_2_5", "to": "TRAP_DEAD", "reason": "256 exceeds 255" },
+      { "step": 4, "char": ".", "from": "TRAP_DEAD", "to": "TRAP_DEAD" }
+    ]
+  },
+  {
+    "name": "Leading Zero Disallowed Rejection Trace",
+    "input": "192.168.001.1",
+    "result": "REJECTED",
+    "finalState": "TRAP_DEAD",
+    "steps": [
+      { "step": 8, "char": ".", "from": "O2_1XX", "to": "S_3" },
+      { "step": 9, "char": "0", "from": "S_3", "to": "O3_ZERO" },
+      { "step": 10, "char": "0", "from": "O3_ZERO", "to": "TRAP_DEAD", "reason": "Leading zero violation (requires single 0)" }
+    ]
+  }
+]

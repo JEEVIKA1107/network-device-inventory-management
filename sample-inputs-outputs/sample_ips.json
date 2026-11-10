@@ -1,0 +1,167 @@
+[
+  {
+    "inputAddress": "192.168.1.1",
+    "isValid": true,
+    "regexMatch": true,
+    "dfaAccepted": true,
+    "isEquivalent": true,
+    "errorReason": null,
+    "invalidOctet": null,
+    "finalState": "O4_1",
+    "totalSteps": 11
+  },
+  {
+    "inputAddress": "10.0.0.1",
+    "isValid": true,
+    "regexMatch": true,
+    "dfaAccepted": true,
+    "isEquivalent": true,
+    "errorReason": null,
+    "invalidOctet": null,
+    "finalState": "O4_1",
+    "totalSteps": 8
+  },
+  {
+    "inputAddress": "172.16.0.10",
+    "isValid": true,
+    "regexMatch": true,
+    "dfaAccepted": true,
+    "isEquivalent": true,
+    "errorReason": null,
+    "invalidOctet": null,
+    "finalState": "O4_1X",
+    "totalSteps": 11
+  },
+  {
+    "inputAddress": "255.255.255.255",
+    "isValid": true,
+    "regexMatch": true,
+    "dfaAccepted": true,
+    "isEquivalent": true,
+    "errorReason": null,
+    "invalidOctet": null,
+    "finalState": "O4_ZERO",
+    "totalSteps": 15
+  },
+  {
+    "inputAddress": "0.0.0.0",
+    "isValid": true,
+    "regexMatch": true,
+    "dfaAccepted": true,
+    "isEquivalent": true,
+    "errorReason": null,
+    "invalidOctet": null,
+    "finalState": "O4_ZERO",
+    "totalSteps": 7
+  },
+  {
+    "inputAddress": "8.8.8.8",
+    "isValid": true,
+    "regexMatch": true,
+    "dfaAccepted": true,
+    "isEquivalent": true,
+    "errorReason": null,
+    "invalidOctet": null,
+    "finalState": "O4_1X",
+    "totalSteps": 7
+  },
+  {
+    "inputAddress": "256.168.1.1",
+    "isValid": false,
+    "regexMatch": false,
+    "dfaAccepted": false,
+    "isEquivalent": true,
+    "errorReason": "Octet 1 ('256' = 256) exceeds maximum 255.",
+    "invalidOctet": 1,
+    "finalState": "TRAP_DEAD",
+    "totalSteps": 11
+  },
+  {
+    "inputAddress": "192.168.1.300",
+    "isValid": false,
+    "regexMatch": false,
+    "dfaAccepted": false,
+    "isEquivalent": true,
+    "errorReason": "Octet 4 ('300' = 300) exceeds maximum 255.",
+    "invalidOctet": 4,
+    "finalState": "TRAP_DEAD",
+    "totalSteps": 13
+  },
+  {
+    "inputAddress": "192.168.1",
+    "isValid": false,
+    "regexMatch": false,
+    "dfaAccepted": false,
+    "isEquivalent": true,
+    "errorReason": "Expected exactly 3 dot separators for 4 octets, found 2.",
+    "invalidOctet": null,
+    "finalState": "O3_1",
+    "totalSteps": 9
+  },
+  {
+    "inputAddress": "192.168.1.1.1",
+    "isValid": false,
+    "regexMatch": false,
+    "dfaAccepted": false,
+    "isEquivalent": true,
+    "errorReason": "Expected exactly 3 dot separators for 4 octets, found 4.",
+    "invalidOctet": null,
+    "finalState": "TRAP_DEAD",
+    "totalSteps": 13
+  },
+  {
+    "inputAddress": "192.168..1",
+    "isValid": false,
+    "regexMatch": false,
+    "dfaAccepted": false,
+    "isEquivalent": true,
+    "errorReason": "Octet 3 is empty.",
+    "invalidOctet": 3,
+    "finalState": "TRAP_DEAD",
+    "totalSteps": 10
+  },
+  {
+    "inputAddress": "192.168.1.abc",
+    "isValid": false,
+    "regexMatch": false,
+    "dfaAccepted": false,
+    "isEquivalent": true,
+    "errorReason": "Octet 4 ('abc') contains non-numeric characters.",
+    "invalidOctet": 4,
+    "finalState": "TRAP_DEAD",
+    "totalSteps": 13
+  },
+  {
+    "inputAddress": "192.168.001.1",
+    "isValid": false,
+    "regexMatch": false,
+    "dfaAccepted": false,
+    "isEquivalent": true,
+    "errorReason": "Octet 3 ('001') has invalid leading zero. Canonical decimal requires single '0'.",
+    "invalidOctet": 3,
+    "finalState": "TRAP_DEAD",
+    "totalSteps": 13
+  },
+  {
+    "inputAddress": "-192.168.1.1",
+    "isValid": false,
+    "regexMatch": false,
+    "dfaAccepted": false,
+    "isEquivalent": true,
+    "errorReason": "Octet 1 ('-192') contains non-numeric characters.",
+    "invalidOctet": 1,
+    "finalState": "TRAP_DEAD",
+    "totalSteps": 12
+  },
+  {
+    "inputAddress": "999.999.999.999",
+    "isValid": false,
+    "regexMatch": false,
+    "dfaAccepted": false,
+    "isEquivalent": true,
+    "errorReason": "Octet 1 ('999' = 999) exceeds maximum 255.",
+    "invalidOctet": 1,
+    "finalState": "TRAP_DEAD",
+    "totalSteps": 15
+  }
+]
