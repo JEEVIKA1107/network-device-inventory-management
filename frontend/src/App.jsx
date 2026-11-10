@@ -10,6 +10,8 @@ import DeviceInventory from './pages/DeviceInventory';
 import AddDevice from './pages/AddDevice';
 import EditDevice from './pages/EditDevice';
 import DeviceDetails from './pages/DeviceDetails';
+import NetworkTopology from './pages/NetworkTopology';
+import NetworkInformation from './pages/NetworkInformation';
 import IPv4Validator from './pages/IPv4Validator';
 import DFASimulator from './pages/DFASimulator';
 import DFADiagram from './pages/DFADiagram';
@@ -40,6 +42,7 @@ export default function App() {
             <Route path="devices/edit/:id" element={<EditDevice />} />
             <Route path="devices/:id" element={<DeviceDetails />} />
             <Route path="topology" element={<NetworkTopology />} />
+            <Route path="network-info" element={<NetworkInformation />} />
             <Route path="validator" element={<IPv4Validator />} />
             <Route path="dfa-simulator" element={<DFASimulator />} />
             <Route path="dfa-diagram" element={<DFADiagram />} />
