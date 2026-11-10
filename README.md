@@ -114,24 +114,15 @@ npm run dev            # Starts Vite development server on http://localhost:5173
 
 ## 8. Live Cloud Deployment Guide
 
-### Backend on Render:
-1. Connect GitHub repository to Render as a **Web Service**.
-2. Root directory: `backend` (or use root `render.yaml`).
-3. Build command: `npm install`
-4. Start command: `node server.js`
-5. Environment Variables:
-   - `NODE_ENV`: `production`
-   - `MONGODB_URI`: `<Your MongoDB Atlas Connection String>`
-   - `JWT_SECRET`: `<Secure Random 32+ Character Secret>`
-   - `CORS_ORIGIN`: `<Your Vercel Frontend URL>`
+A detailed, step-by-step deployment guide with full instructions for MongoDB Atlas, Render Web Services, and Vercel Edge Hosting is documented in [documentation/Deployment_Guide.md](documentation/Deployment_Guide.md).
 
-### Frontend on Vercel:
-1. Connect GitHub repository to Vercel.
-2. Root directory: `frontend`.
-3. Framework Preset: **Vite**.
-4. Output Directory: `dist`.
-5. Environment Variable:
-   - `VITE_API_URL`: `<Your Render Backend URL>/api`
+### Quick Summary:
+- **Backend (Render):** Uses [render.yaml](render.yaml) or manual setup with `rootDir: backend`, `npm install`, `npm start`, and health check `/api/health`.
+- **Frontend (Vercel):** Configured via [vercel.json](vercel.json) with framework `vite`, root directory `frontend`, build `npm run build`, and output `dist`.
+- **Database (MongoDB Atlas):** Free M0 Shared Cluster with IP access `0.0.0.0/0` and seeded using `npm run seed`.
+- **Environment Variables:**
+  - On Render: `MONGODB_URI`, `JWT_SECRET`, `CORS_ORIGIN`, `NODE_ENV=production`.
+  - On Vercel: `VITE_API_URL=https://<your-render-backend-url>/api`.
 
 ---
 
