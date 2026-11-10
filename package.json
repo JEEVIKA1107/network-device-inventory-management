@@ -1,0 +1,34 @@
+{
+  "name": "nettrack-dfa",
+  "version": "1.0.0",
+  "description": "NetTrack DFA — Network Device Inventory Management System with IPv4 Address Validation",
+  "private": true,
+  "scripts": {
+    "start": "concurrently --kill-others-on-fail --prefix \"[{name}]\" --names \"BACKEND,FRONTEND\" --prefix-colors \"bgBlue.bold,bgMagenta.bold\" \"npm --prefix backend start\" \"npm --prefix frontend run dev\"",
+    "dev": "concurrently --kill-others-on-fail --prefix \"[{name}]\" --names \"BACKEND,FRONTEND\" --prefix-colors \"bgBlue.bold,bgMagenta.bold\" \"npm --prefix backend run dev\" \"npm --prefix frontend run dev\"",
+    "install:all": "npm --prefix backend install && npm --prefix frontend install",
+    "postinstall": "npm --prefix backend install && npm --prefix frontend install",
+    "backend": "npm --prefix backend start",
+    "backend:dev": "npm --prefix backend run dev",
+    "backend:seed": "npm --prefix backend run seed",
+    "backend:test": "npm --prefix backend test",
+    "frontend": "npm --prefix frontend run dev",
+    "frontend:build": "npm --prefix frontend run build",
+    "build": "npm --prefix frontend run build",
+    "test": "npm --prefix backend test",
+    "seed": "npm --prefix backend run seed"
+  },
+  "keywords": [
+    "network-device-inventory",
+    "dfa",
+    "ipv4-validation",
+    "mern-stack",
+    "formal-languages",
+    "automata-theory"
+  ],
+  "author": "JEEVIKA1107",
+  "license": "MIT",
+  "dependencies": {
+    "concurrently": "^9.1.2"
+  }
+}
