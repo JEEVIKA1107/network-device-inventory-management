@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>NetTrack DFA - State Transition Table</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: #F5F7FB; color: #142D4E; margin: 40px; }
+    h1 { color: #142D4E; border-bottom: 2px solid #2563EB; padding-bottom: 8px; }
+    .badge { display: inline-block; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; text-transform: uppercase; }
+    .badge-start { background: #DBEAFE; color: #1E40AF; }
+    .badge-accept { background: #DCFCE7; color: #166534; }
+    .badge-dead { background: #FEE2E2; color: #991B1B; }
+    .badge-regular { background: #E2E8F0; color: #475569; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; background: white; box-shadow: 0 2px 8px rgba(0,0,0,0.05); border-radius: 8px; overflow: hidden; }
+    th { background: #142D4E; color: white; text-align: left; padding: 12px 16px; font-weight: 600; font-size: 13px; }
+    td { padding: 10px 16px; border-bottom: 1px solid #E2E8F0; font-size: 13px; }
+    tr:hover { background: #F8FAFC; }
+    .code { font-family: monospace; font-weight: bold; color: #2563EB; }
+  </style>
+</head>
+<body>
+  <h1>NetTrack DFA — IPv4 State Transition Table</h1>
+  <p><strong>Formal Model:</strong> Deterministic Finite Automaton (M = (Q, &Sigma;, &delta;, q<sub>0</sub>, F)) for Canonical IPv4 Address Validation.</p>
+  <p><strong>Language:</strong> L = { a.b.c.d | a,b,c,d &in; [0, 255] }</p>
+  <table>
+    <thead>
+      <tr>
+        <th>Current State</th>
+        <th>State Type</th>
+        <th>Input Symbol(s)</th>
+        <th>Next State</th>
+        <th>Next State Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="code">TRAP_DEAD</span><br><small style="color:#64748B">Trap/Dead State</small></td>
+        <td><span class="badge badge-dead">Dead / Reject</span></td>
+        <td><strong style="color:#0F172A">0, 1, 2, 3, 4, 5, 6, 7, 8, 9, ., [Other/Invalid]</strong></td>
+        <td><span class="code">TRAP_DEAD</span><br><small style="color:#64748B">Trap/Dead State</small></td>
+        <td><span class="badge badge-dead">Dead</span></td>
+      </tr>
+      <tr>
+        <td><span class="code">S_1</span><br><small style="color:#64748B">Start of Octet 1</small></td>
+        <td><span class="badge badge-start">Start State</span></td>
+        <td><strong style="color:#0F172A">0</strong></td>
+        <td><span class="code">O1_ZERO</span><br><small style="color:#64748B">Octet 1: Single '0'</small></td>
+        <td><span class="badge badge-regular">Normal</span></td>
+      </tr>
+      <tr>
+        <td><span class="code">S_1</span><br><small style="color:#64748B">Start of Octet 1</small></td>
+        <td><span class="badge badge-start">Start State</span></td>
+        <td><strong style="color:#0F172A">1</strong></td>
+        <td><span class="code">O1_1</span><br><small style="color:#64748B">Octet 1: Digit '1'</small></td>
+        <td><span class="badge badge-regular">Normal</span></td>
+      </tr>
+      <tr>
+        <td><span class="code">S_1</span><br><small style="color:#64748B">Start of Octet 1</small></td>
+        <td><span class="badge badge-start">Start State</span></td>
+        <td><strong style="color:#0F172A">2</strong></td>
+        <td><span class="code">O1_2</span><br><small style="color:#64748B">Octet 1: Digit '2'</small></td>
+        <td><span class="badge badge-regular">Normal</span></td>
+      </tr>
+      <tr>
+        <td><span class="code">S_1</span><br><small style="color:#64748B">Start of Octet 1</small></td>
+        <td><span class="badge badge-start">Start State</span></td>
+        <td><strong style="color:#0F172A">3, 4, 5, 6, 7, 8, 9</strong></td>
+        <td><span class="code">O1_1X</span><br><small style="color:#64748B">Octet 1: '1' + [0-9]</small></td>
+        <td><span class="badge badge-regular">Normal</span></td>
+      </tr>
+      <tr>
+        <td><span class="code">S_1</span><br><small style="color:#64748B">Start of Octet 1</small></td>
+        <td><span class="badge badge-start">Start State</span></td>
+        <td><strong style="color:#0F172A">., [Other/Invalid]</strong></td>
+        <td><span class="code">TRAP_DEAD</span><br><small style="color:#64748B">Trap/Dead State</small></td>
+        <td><span class="badge badge-dead">Dead</span></td>
+      </tr>
+      <tr>
+        <td><span class="code">O1_ZERO</span><br><small style="color:#64748B">Octet 1: Single '0'</small></td>
+        <td><span class="badge badge-regular">Normal</span></td>
+        <td><strong style="color:#0F172A">0, 1, 2, 3, 4, 5, 6, 7, 8, 9, [Other/Invalid]</strong></td>
+        <td><span class="code">TRAP_DEAD</span><br><small style="color:#64748B">Trap/Dead State</small></td>
+        <td><span class="badge badge-dead">Dead</span></td>
+      </tr>
+      <tr>
+        <td><span class="code">O1_ZERO</span><br><small style="color:#64748B">Octet 1: Single '0'</small></td>
+        <td><span class="badge badge-regular">Normal</span></td>
+        <td><strong style="color:#0F172A">.</strong></td>
+        <td><span class="code">S_2</span><br><small style="color:#64748B">Start of Octet 2</small></td>
+        <td><span class="badge badge-regular">Normal</span></td>
+      </tr>
+      <tr>
+        <td><span class="code">O1_1</span><br><small style="color:#64748B">Octet 1: Digit '1'</small></td>
+        <td><span class="badge badge-regular">Normal</span></td>
+        <td><strong style="color:#0F172A">0, 1, 2, 3, 4, 5, 6, 7, 8, 9</strong></td>
+        <td><span class="code">O1_1X</span><br><small style="color:#64748B">Octet 1: '1' + [0-9]</small></td>
+        <td><span class="badge badge-regular">Normal</span></td>
+      </tr>
+      <tr>
+        <td><span class="code">O1_1</span><br><small style="color:#64748B">Octet 1: Digit '1'</small></td>
+        <td><span class="badge badge-regular">Normal</span></td>
+        <td><strong style="color:#0F172A">.</strong></td>
+        <td><span class="code">S_2</span><br><small style="color:#64748B">Start of Octet 2</small></td>
+        <td><span class="badge badge-regular">Normal</span></td>
+      </tr>
+      <tr>
+        <td><span class="code">O1_1</span><br><small style="color:#64748B">Octet 1: Digit '1'</small></td>
+        <td><span class="badge badge-regular">Normal</span></td>
+        <td><strong style="color:#0F172A">[Other/Invalid]</strong></td>
+        <td><span class="code">TRAP_DEAD</span><br><small style="color:#64748B">Trap/Dead State</small></td>
+        <td><span class="badge badge-dead">Dead</span></td>
+      </tr>
+      <tr>
+        <td><span class="code">O1_1X</span><br><small style="color:#64748B">Octet 1: '1' + [0-9]</small></td>
+        <td><span class="badge badge-regular">Normal</span></td>
+        <td><strong style="color:#0F172A">0, 1, 2, 3, 4, 5, 6, 7, 8, 9</strong></td>
+        <td><span class="code">O1_ZERO</span><br><small style="color:#64748B">Octet 1: Single '0'</small></td>
+        <td><span class="badge badge-regular">Normal</span></td>
+      </tr>
+      <tr>
+        <td><span class="code">O1_1X</span><br><small style="color:#64748B">Octet 1: '1' + [0-9]</small></td>
+        <td><span class="badge badge-regular">Normal</span></td>
+        <td><strong style="color:#0F172A">.</strong></td>
+        <td><span class="code">S_2</span><br><small style="color:#64748B">Start of Octet 2</small></td>
+        <td><span class="badge badge-regular">Normal</span></td>
+      </tr>
+      <tr>
+        <td><span class="code">O1_1X</span><br><small style="color:#64748B">Octet 1: '1' + [0-9]</small></td>
+        <td><span class="badge badge-regular">Normal</span></td>
+        <td><strong style="color:#0F172A">[Other/Invalid]</strong></td>
+        <td><span class="code">TRAP_DEAD</span><br><small style="color:#64748B">Trap/Dead State</small></td>
+        <td><span class="badge badge-dead">Dead</span></td>
+      </tr>
+      <tr>
+        <td><span class="code">O1_2</span><br><small style="color:#64748B">Octet 1: Digit '2'</small></td>
+        <td><span class="badge badge-regular">Normal</span></td>
+        <td><strong style="color:#0F172A">0, 1, 2, 3, 4</strong></td>
+        <td><span class="code">O1_1X</span><br><small style="color:#64748B">Octet 1: '1' + [0-9]</small></td>
+        <td><span class="badge badge-regular">Normal</span></td>
+      </tr>
+      <tr>
+        <td><span class="code">O1_2</span><br><small style="color:#64748B">Octet 1: Digit '2'</small></td>
+        <td><span class="badge badge-regular">Normal</span></td>
+        <td><strong style="color:#0F172A">5</strong></td>
+        <td><span class="code">O1_2_5</span><br><small style="color:#64748B">Octet 1: '25'</small></td>
+        <td><span class="badge badge-regular">Normal</span></td>
+      </tr>
+      <tr>
+        <td><span class="code">O1_2</span><br><small style="color:#64748B">Octet 1: Digit '2'</small></td>
+        <td><span class="badge badge-regular">Normal</span></td>
+        <td><strong style="color:#0F172A">6, 7, 8, 9</strong></td>
+        <td><span class="code">O1_ZERO</span><br><small style="color:#64748B">Octet 1: Single '0'</small></td>
+        <td><span class="badge badge-regular">Normal</span></td>
+      </tr>
+      <tr>
+        <td><span class="code">O1_2</span><br><small style="color:#64748B">Octet 1: Digit '2'</small></td>
+        <td><span class="badge badge-regular">Normal</span></td>
+        <td><strong style="color:#0F172A">.</strong></td>
+        <td><span class="code">S_2</span><br><small style="color:#64748B">Start of Octet 2</small></td>
+        <td><span class="badge badge-regular">Normal</span></td>
+      </tr>
+      <tr>
+        <td><span class="code">O1_2</span><br><small style="color:#64748B">Octet 1: Digit '2'</small></td>
+        <td><span class="badge badge-regular">Normal</span></td>
+        <td><strong style="color:#0F172A">[Other/Invalid]</strong></td>
+        <td><span class="code">TRAP_DEAD</span><br><small style="color:#64748B">Trap/Dead State</small></td>
+        <td><span class="badge badge-dead">Dead</span></td>
+      </tr>
+      <tr>
+        <td><span class="code">O1_2_5</span><br><small style="color:#64748B">Octet 1: '25'</small></td>
+        <td><span class="badge badge-regular">Normal</span></td>
+        <td><strong style="color:#0F172A">0, 1, 2, 3, 4, 5</strong></td>
+        <td><span class="code">O1_ZERO</span><br><small style="color:#64748B">Octet 1: Single '0'</small></td>
+        <td><span class="badge badge-regular">Normal</span></td>
+      </tr>
+      <tr>
+        <td><span class="code">O1_2_5</span><br><small style="color:#64748B">Octet 1: '25'</small></td>
+        <td><span class="badge badge-regular">Normal</span></td>
+        <td><strong style="color:#0F172A">6, 7, 8, 9, [Other/Invalid]</strong></td>
+        <td><span class="code">TRAP_DEAD</span><br><small style="color:#64748B">Trap/Dead State</small></td>
+        <td><span class="badge badge-dead">Dead</span></td>
+      </tr>
+      <tr>
+        <td><span class="code">O1_2_5</span><br><small style="color:#64748B">Octet 1: '25'</small></td>
+        <td><span class="badge badge-regular">Normal</span></td>
+        <td><strong style="color:#0F172A">.</strong></td>
+        <td><span class="code">S_2</span><br><small style="color:#64748B">Start of Octet 2</small></td>
+        <td><span class="badge badge-regular">Normal</span></td>
+      </tr>
+      <tr>
+        <td><span class="code">S_2</span><br><small style="color:#64748B">Start of Octet 2</small></td>
+        <td><span class="badge badge-regular">Normal</span></td>
+        <td><strong style="color:#0F172A">0</strong></td>
+        <td><span class="code">O2_ZERO</span><br><small style="color:#64748B">Octet 2: Single '0'</small></td>
+        <td><span class="badge badge-regular">Normal</span></td>
+      </tr>
+      <tr>
+        <td><span class="code">S_2</span><br><small style="color:#64748B">Start of Octet 2</small></td>
+        <td><span class="badge badge-regular">Normal</span></td>
+        <td><strong style="color:#0F172A">1</strong></td>
+        <td><span class="code">O2_1</span><br><small style="color:#64748B">Octet 2: Digit '1'</small></td>
+        <td><span class="badge badge-regular">Normal</span></td>
+      </tr>
+      <tr>
+        <td><span class="code">S_2</span><br><small style="color:#64748B">Start of Octet 2</small></td>
+        <td><span class="badge badge-regular">Normal</span></td>
+        <td><strong style="color:#0F172A">2</strong></td>
+        <td><span class="code">O2_2</span><br><small style="color:#64748B">Octet 2: Digit '2'</small></td>
+        <td><span class="badge badge-regular">Normal</span></td>
+      </tr>
+      <tr>
+        <td><span class="code">S_2</span><br><small style="color:#64748B">Start of Octet 2</small></td>
+        <td><span class="badge badge-regular">Normal</span></td>
+        <td><strong style="color:#0F172A">3, 4, 5, 6, 7, 8, 9</strong></td>
+        <td><span class="code">O2_1X</span><br><small style="color:#64748B">Octet 2: '1' + [0-9]</small></td>
+        <td><span class="badge badge-regular">Normal</span></td>
+      </tr>
+      <tr>
+        <td><span class="code">S_2</span><br><small style="color:#64748B">Start of Octet 2</small></td>
+        <td><span class="badge badge-regular">Normal</span></td>
+        <td><strong style="color:#0F172A">., [Other/Invalid]</strong></td>
+        <td><span class="code">TRAP_DEAD</span><br><small style="color:#64748B">Trap/Dead State</small></td>
+        <td><span class="badge badge-dead">Dead</span></td>
+      </tr>
+      <tr>
+        <td><span class="code">O2_ZERO</span><br><small style="color:#64748B">Octet 2: Single '0'</small></td>
+        <td><span class="badge badge-regular">Normal</span></td>
+        <td><strong style="color:#0F172A">0, 1, 2, 3, 4, 5, 6, 7, 8, 9, [Other/Invalid]</strong></td>
+        <td><span class="code">TRAP_DEAD</span><br><small style="color:#64748B">Trap/Dead State</small></td>
+        <td><span class="badge badge-dead">Dead</span></td>
+      </tr>
+      <tr>
+        <td><span class="code">O2_ZERO</span><br><small style="color:#64748B">Octet 2: Single '0'</small></td>
+        <td><span class="badge badge-regular">Normal</span></td>
+        <td><strong style="color:#0F172A">.</strong></td>
+        <td><span class="code">S_3</span><br><small style="color:#64748B">Start of Octet 3</small></td>
+        <td><span class="badge badge-regular">Normal</span></td>
+      </tr>
+      <tr>
+        <td><span class="code">O2_1</span><br><small style="color:#64748B">Octet 2: Digit '1'</small></td>
+        <td><span class="badge badge-regular">Normal</span></td>
+        <td><strong style="color:#0F172A">0, 1, 2, 3, 4, 5, 6, 7, 8, 9</strong></td>
+        <td><span class="code">O2_1X</span><br><small style="color:#64748B">Octet 2: '1' + [0-9]</small></td>
+        <td><span class="badge badge-regular">Normal</span></td>
+      </tr>
+      <tr>
+        <td><span class="code">O2_1</span><br><small style="color:#64748B">Octet 2: Digit '1'</small></td>
+        <td><span class="badge badge-regular">Normal</span></td>
+        <td><strong style="color:#0F172A">.</strong></td>
+        <td><span class="code">S_3</span><br><small style="color:#64748B">Start of Octet 3</small></td>
+        <td><span class="badge badge-regular">Normal</span></td>
+      </tr>
+      <tr>
+        <td><span class="code">O2_1</span><br><small style="color:#64748B">Octet 2: Digit '1'</small></td>
+        <td><span class="badge badge-regular">Normal</span></td>
+        <td><strong style="color:#0F172A">[Other/Invalid]</strong></td>
+        <td><span class="code">TRAP_DEAD</span><br><small style="color:#64748B">Trap/Dead State</small></td>
+        <td><span class="badge badge-dead">Dead</span></td>
+      </tr>
+      <tr>
+        <td><span class="code">O2_1X</span><br><small style="color:#64748B">Octet 2: '1' + [0-9]</small></td>
+        <td><span class="badge badge-regular">Normal</span></td>
+        <td><strong style="color:#0F172A">0, 1, 2, 3, 4, 5, 6, 7, 8, 9</strong></td>
+        <td><span class="code">O2_ZERO</span><br><small style="color:#64748B">Octet 2: Single '0'</small></td>
+        <td><span class="badge badge-regular">Normal</span></td>
+      </tr>
+      <tr>
+        <td><span class="code">O2_1X</span><br><small style="color:#64748B">Octet 2: '1' + [0-9]</small></td>
+        <td><span class="badge badge-regular">Normal</span></td>
+        <td><strong style="color:#0F172A">.</strong></td>
+        <td><span class="code">S_3</span><br><small style="color:#64748B">Start of Octet 3</small></td>
+        <td><span class="badge badge-regular">Normal</span></td>
+      </tr>
+      <tr>
+        <td><span class="code">O2_1X</span><br><small style="color:#64748B">Octet 2: '1' + [0-9]</small></td>
+        <td><span class="badge badge-regular">Normal</span></td>
+        <td><strong style="color:#0F172A">[Other/Invalid]</strong></td>
+        <td><span class="code">TRAP_DEAD</span><br><small style="color:#64748B">Trap/Dead State</small></td>
+        <td><span class="badge badge-dead">Dead</span></td>
+      </tr>
+      <tr>
+        <td><span class="code">O2_2</span><br><small style="color:#64748B">Octet 2: Digit '2'</small></td>
+        <td><span class="badge badge-regular">Normal</span></td>
+        <td><strong style="color:#0F172A">0, 1, 2, 3, 4</strong></td>
+        <td><span class="code">O2_1X</span><br><small style="color:#64748B">Octet 2: '1' + [0-9]</small></td>
+        <td><span class="badge badge-regular">Normal</span></td>
+      </tr>
+      <tr>
+        <td><span class="code">O2_2</span><br><small style="color:#64748B">Octet 2: Digit '2'</small></td>
+        <td><span class="badge badge-regular">Normal</span></td>
+        <td><strong style="color:#0F172A">5</strong></td>
+        <td><span class="code">O2_2_5</span><br><small style="color:#64748B">Octet 2: '25'</small></td>
+        <td><span class="badge badge-regular">Normal</span></td>
+      </tr>
+      <tr>
+        <td><span class="code">O2_2</span><br><small style="color:#64748B">Octet 2: Digit '2'</small></td>
+        <td><span class="badge badge-regular">Normal</span></td>
+        <td><strong style="color:#0F172A">6, 7, 8, 9</strong></td>
+        <td><span class="code">O2_ZERO</span><br><small style="color:#64748B">Octet 2: Single '0'</small></td>
+        <td><span class="badge badge-regular">Normal</span></td>
+      </tr>
+      <tr>
+        <td><span class="code">O2_2</span><br><small style="color:#64748B">Octet 2: Digit '2'</small></td>
+        <td><span class="badge badge-regular">Normal</span></td>
+        <td><strong style="color:#0F172A">.</strong></td>
+        <td><span class="code">S_3</span><br><small style="color:#64748B">Start of Octet 3</small></td>
+        <td><span class="badge badge-regular">Normal</span></td>
+      </tr>
+      <tr>
+        <td><span class="code">O2_2</span><br><small style="color:#64748B">Octet 2: Digit '2'</small></td>
+        <td><span class="badge badge-regular">Normal</span></td>
+        <td><strong style="color:#0F172A">[Other/Invalid]</strong></td>
+        <td><span class="code">TRAP_DEAD</span><br><small style="color:#64748B">Trap/Dead State</small></td>
+        <td><span class="badge badge-dead">Dead</span></td>
+      </tr>
+      <tr>
+        <td><span class="code">O2_2_5</span><br><small style="color:#64748B">Octet 2: '25'</small></td>
+        <td><span class="badge badge-regular">Normal</span></td>
+        <td><strong style="color:#0F172A">0, 1, 2, 3, 4, 5</strong></td>
+        <td><span class="code">O2_ZERO</span><br><small style="color:#64748B">Octet 2: Single '0'</small></td>
+        <td><span class="badge badge-regular">Normal</span></td>
+      </tr>
+      <tr>
+        <td><span class="code">O2_2_5</span><br><small style="color:#64748B">Octet 2: '25'</small></td>
+        <td><span class="badge badge-regular">Normal</span></td>
+        <td><strong style="color:#0F172A">6, 7, 8, 9, [Other/Invalid]</strong></td>
+        <td><span class="code">TRAP_DEAD</span><br><small style="color:#64748B">Trap/Dead State</small></td>
+        <td><span class="badge badge-dead">Dead</span></td>
+      </tr>
+      <tr>
+        <td><span class="code">O2_2_5</span><br><small style="color:#64748B">Octet 2: '25'</small></td>
+        <td><span class="badge badge-regular">Normal</span></td>
+        <td><strong style="color:#0F172A">.</strong></td>
+        <td><span class="code">S_3</span><br><small style="color:#64748B">Start of Octet 3</small></td>
+        <td><span class="badge badge-regular">Normal</span></td>
+      </tr>
+      <tr>
+        <td><span class="code">S_3</span><br><small style="color:#64748B">Start of Octet 3</small></td>
+        <td><span class="badge badge-regular">Normal</span></td>
+        <td><strong style="color:#0F172A">0</strong></td>
+        <td><span class="code">O3_ZERO</span><br><small style="color:#64748B">Octet 3: Single '0'</small></td>
+        <td><span class="badge badge-regular">Normal</span></td>
+      </tr>
+      <tr>
+        <td><span class="code">S_3</span><br><small style="color:#64748B">Start of Octet 3</small></td>
+        <td><span class="badge badge-regular">Normal</span></td>
+        <td><strong style="color:#0F172A">1</strong></td>
+        <td><span class="code">O3_1</span><br><small style="color:#64748B">Octet 3: Digit '1'</small></td>
+        <td><span class="badge badge-regular">Normal</span></td>
+      </tr>
+      <tr>
+        <td><span class="code">S_3</span><br><small style="color:#64748B">Start of Octet 3</small></td>
+        <td><span class="badge badge-regular">Normal</span></td>
+        <td><strong style="color:#0F172A">2</strong></td>
+        <td><span class="code">O3_2</span><br><small style="color:#64748B">Octet 3: Digit '2'</small></td>
+        <td><span class="badge badge-regular">Normal</span></td>
+      </tr>
+      <tr>
+        <td><span class="code">S_3</span><br><small style="color:#64748B">Start of Octet 3</small></td>
+        <td><span class="badge badge-regular">Normal</span></td>
+        <td><strong style="color:#0F172A">3, 4, 5, 6, 7, 8, 9</strong></td>
+        <td><span class="code">O3_1X</span><br><small style="color:#64748B">Octet 3: '1' + [0-9]</small></td>
+        <td><span class="badge badge-regular">Normal</span></td>
+      </tr>
+      <tr>
+        <td><span class="code">S_3</span><br><small style="color:#64748B">Start of Octet 3</small></td>
+        <td><span class="badge badge-regular">Normal</span></td>
+        <td><strong style="color:#0F172A">., [Other/Invalid]</strong></td>
+        <td><span class="code">TRAP_DEAD</span><br><small style="color:#64748B">Trap/Dead State</small></td>
+        <td><span class="badge badge-dead">Dead</span></td>
+      </tr>
+      <tr>
+        <td><span class="code">O3_ZERO</span><br><small style="color:#64748B">Octet 3: Single '0'</small></td>
+        <td><span class="badge badge-regular">Normal</span></td>
+        <td><strong style="color:#0F172A">0, 1, 2, 3, 4, 5, 6, 7, 8, 9, [Other/Invalid]</strong></td>
+        <td><span class="code">TRAP_DEAD</span><br><small style="color:#64748B">Trap/Dead State</small></td>
+        <td><span class="badge badge-dead">Dead</span></td>
+      </tr>
+      <tr>
+        <td><span class="code">O3_ZERO</span><br><small style="color:#64748B">Octet 3: Single '0'</small></td>
+        <td><span class="badge badge-regular">Normal</span></td>
+        <td><strong style="color:#0F172A">.</strong></td>
+        <td><span class="code">S_4</span><br><small style="color:#64748B">Start of Octet 4</small></td>
+        <td><span class="badge badge-regular">Normal</span></td>
+      </tr>
+      <tr>
+        <td><span class="code">O3_1</span><br><small style="color:#64748B">Octet 3: Digit '1'</small></td>
+        <td><span class="badge badge-regular">Normal</span></td>
+        <td><strong style="color:#0F172A">0, 1, 2, 3, 4, 5, 6, 7, 8, 9</strong></td>
+        <td><span class="code">O3_1X</span><br><small style="color:#64748B">Octet 3: '1' + [0-9]</small></td>
+        <td><span class="badge badge-regular">Normal</span></td>
+      </tr>
+      <tr>
+        <td><span class="code">O3_1</span><br><small style="color:#64748B">Octet 3: Digit '1'</small></td>
+        <td><span class="badge badge-regular">Normal</span></td>
+        <td><strong style="color:#0F172A">.</strong></td>
+        <td><span class="code">S_4</span><br><small style="color:#64748B">Start of Octet 4</small></td>
+        <td><span class="badge badge-regular">Normal</span></td>
+      </tr>
+      <tr>
+        <td><span class="code">O3_1</span><br><small style="color:#64748B">Octet 3: Digit '1'</small></td>
+        <td><span class="badge badge-regular">Normal</span></td>
+        <td><strong style="color:#0F172A">[Other/Invalid]</strong></td>
+        <td><span class="code">TRAP_DEAD</span><br><small style="color:#64748B">Trap/Dead State</small></td>
+        <td><span class="badge badge-dead">Dead</span></td>
+      </tr>
+      <tr>
+        <td><span class="code">O3_1X</span><br><small style="color:#64748B">Octet 3: '1' + [0-9]</small></td>
+        <td><span class="badge badge-regular">Normal</span></td>
+        <td><strong style="color:#0F172A">0, 1, 2, 3, 4, 5, 6, 7, 8, 9</strong></td>
+        <td><span class="code">O3_ZERO</span><br><small style="color:#64748B">Octet 3: Single '0'</small></td>
+        <td><span class="badge badge-regular">Normal</span></td>
+      </tr>
+      <tr>
+        <td><span class="code">O3_1X</span><br><small style="color:#64748B">Octet 3: '1' + [0-9]</small></td>
+        <td><span class="badge badge-regular">Normal</span></td>
+        <td><strong style="color:#0F172A">.</strong></td>
+        <td><span class="code">S_4</span><br><small style="color:#64748B">Start of Octet 4</small></td>
+        <td><span class="badge badge-regular">Normal</span></td>
+      </tr>
+      <tr>
+        <td><span class="code">O3_1X</span><br><small style="color:#64748B">Octet 3: '1' + [0-9]</small></td>
+        <td><span class="badge badge-regular">Normal</span></td>
+        <td><strong style="color:#0F172A">[Other/Invalid]</strong></td>
+        <td><span class="code">TRAP_DEAD</span><br><small style="color:#64748B">Trap/Dead State</small></td>
+        <td><span class="badge badge-dead">Dead</span></td>
+      </tr>
+      <tr>
+        <td><span class="code">O3_2</span><br><small style="color:#64748B">Octet 3: Digit '2'</small></td>
+        <td><span class="badge badge-regular">Normal</span></td>
+        <td><strong style="color:#0F172A">0, 1, 2, 3, 4</strong></td>
+        <td><span class="code">O3_1X</span><br><small style="color:#64748B">Octet 3: '1' + [0-9]</small></td>
+        <td><span class="badge badge-regular">Normal</span></td>
+      </tr>
+      <tr>
+        <td><span class="code">O3_2</span><br><small style="color:#64748B">Octet 3: Digit '2'</small></td>
+        <td><span class="badge badge-regular">Normal</span></td>
+        <td><strong style="color:#0F172A">5</strong></td>
+        <td><span class="code">O3_2_5</span><br><small style="color:#64748B">Octet 3: '25'</small></td>
+        <td><span class="badge badge-regular">Normal</span></td>
+      </tr>
+      <tr>
+        <td><span class="code">O3_2</span><br><small style="color:#64748B">Octet 3: Digit '2'</small></td>
+        <td><span class="badge badge-regular">Normal</span></td>
+        <td><strong style="color:#0F172A">6, 7, 8, 9</strong></td>
+        <td><span class="code">O3_ZERO</span><br><small style="color:#64748B">Octet 3: Single '0'</small></td>
+        <td><span class="badge badge-regular">Normal</span></td>
+      </tr>
+      <tr>
+        <td><span class="code">O3_2</span><br><small style="color:#64748B">Octet 3: Digit '2'</small></td>
+        <td><span class="badge badge-regular">Normal</span></td>
+        <td><strong style="color:#0F172A">.</strong></td>
+        <td><span class="code">S_4</span><br><small style="color:#64748B">Start of Octet 4</small></td>
+        <td><span class="badge badge-regular">Normal</span></td>
+      </tr>
+      <tr>
+        <td><span class="code">O3_2</span><br><small style="color:#64748B">Octet 3: Digit '2'</small></td>
+        <td><span class="badge badge-regular">Normal</span></td>
+        <td><strong style="color:#0F172A">[Other/Invalid]</strong></td>
+        <td><span class="code">TRAP_DEAD</span><br><small style="color:#64748B">Trap/Dead State</small></td>
+        <td><span class="badge badge-dead">Dead</span></td>
+      </tr>
+      <tr>
+        <td><span class="code">O3_2_5</span><br><small style="color:#64748B">Octet 3: '25'</small></td>
+        <td><span class="badge badge-regular">Normal</span></td>
+        <td><strong style="color:#0F172A">0, 1, 2, 3, 4, 5</strong></td>
+        <td><span class="code">O3_ZERO</span><br><small style="color:#64748B">Octet 3: Single '0'</small></td>
+        <td><span class="badge badge-regular">Normal</span></td>
+      </tr>
+      <tr>
+        <td><span class="code">O3_2_5</span><br><small style="color:#64748B">Octet 3: '25'</small></td>
+        <td><span class="badge badge-regular">Normal</span></td>
+        <td><strong style="color:#0F172A">6, 7, 8, 9, [Other/Invalid]</strong></td>
+        <td><span class="code">TRAP_DEAD</span><br><small style="color:#64748B">Trap/Dead State</small></td>
+        <td><span class="badge badge-dead">Dead</span></td>
+      </tr>
+      <tr>
+        <td><span class="code">O3_2_5</span><br><small style="color:#64748B">Octet 3: '25'</small></td>
+        <td><span class="badge badge-regular">Normal</span></td>
+        <td><strong style="color:#0F172A">.</strong></td>
+        <td><span class="code">S_4</span><br><small style="color:#64748B">Start of Octet 4</small></td>
+        <td><span class="badge badge-regular">Normal</span></td>
+      </tr>
+      <tr>
+        <td><span class="code">S_4</span><br><small style="color:#64748B">Start of Octet 4</small></td>
+        <td><span class="badge badge-regular">Normal</span></td>
+        <td><strong style="color:#0F172A">0</strong></td>
+        <td><span class="code">O4_ZERO</span><br><small style="color:#64748B">Octet 4: Single '0'</small></td>
+        <td><span class="badge badge-accept">Accepting</span></td>
+      </tr>
+      <tr>
+        <td><span class="code">S_4</span><br><small style="color:#64748B">Start of Octet 4</small></td>
+        <td><span class="badge badge-regular">Normal</span></td>
+        <td><strong style="color:#0F172A">1</strong></td>
+        <td><span class="code">O4_1</span><br><small style="color:#64748B">Octet 4: Digit '1'</small></td>
+        <td><span class="badge badge-accept">Accepting</span></td>
+      </tr>
+      <tr>
+        <td><span class="code">S_4</span><br><small style="color:#64748B">Start of Octet 4</small></td>
+        <td><span class="badge badge-regular">Normal</span></td>
+        <td><strong style="color:#0F172A">2</strong></td>
+        <td><span class="code">O4_2</span><br><small style="color:#64748B">Octet 4: Digit '2'</small></td>
+        <td><span class="badge badge-accept">Accepting</span></td>
+      </tr>
+      <tr>
+        <td><span class="code">S_4</span><br><small style="color:#64748B">Start of Octet 4</small></td>
+        <td><span class="badge badge-regular">Normal</span></td>
+        <td><strong style="color:#0F172A">3, 4, 5, 6, 7, 8, 9</strong></td>
+        <td><span class="code">O4_1X</span><br><small style="color:#64748B">Octet 4: '1' + [0-9]</small></td>
+        <td><span class="badge badge-accept">Accepting</span></td>
+      </tr>
+      <tr>
+        <td><span class="code">S_4</span><br><small style="color:#64748B">Start of Octet 4</small></td>
+        <td><span class="badge badge-regular">Normal</span></td>
+        <td><strong style="color:#0F172A">., [Other/Invalid]</strong></td>
+        <td><span class="code">TRAP_DEAD</span><br><small style="color:#64748B">Trap/Dead State</small></td>
+        <td><span class="badge badge-dead">Dead</span></td>
+      </tr>
+      <tr>
+        <td><span class="code">O4_ZERO</span><br><small style="color:#64748B">Octet 4: Single '0'</small></td>
+        <td><span class="badge badge-accept">Accepting</span></td>
+        <td><strong style="color:#0F172A">0, 1, 2, 3, 4, 5, 6, 7, 8, 9, ., [Other/Invalid]</strong></td>
+        <td><span class="code">TRAP_DEAD</span><br><small style="color:#64748B">Trap/Dead State</small></td>
+        <td><span class="badge badge-dead">Dead</span></td>
+      </tr>
+      <tr>
+        <td><span class="code">O4_1</span><br><small style="color:#64748B">Octet 4: Digit '1'</small></td>
+        <td><span class="badge badge-accept">Accepting</span></td>
+        <td><strong style="color:#0F172A">0, 1, 2, 3, 4, 5, 6, 7, 8, 9</strong></td>
+        <td><span class="code">O4_1X</span><br><small style="color:#64748B">Octet 4: '1' + [0-9]</small></td>
+        <td><span class="badge badge-accept">Accepting</span></td>
+      </tr>
+      <tr>
+        <td><span class="code">O4_1</span><br><small style="color:#64748B">Octet 4: Digit '1'</small></td>
+        <td><span class="badge badge-accept">Accepting</span></td>
+        <td><strong style="color:#0F172A">., [Other/Invalid]</strong></td>
+        <td><span class="code">TRAP_DEAD</span><br><small style="color:#64748B">Trap/Dead State</small></td>
+        <td><span class="badge badge-dead">Dead</span></td>
+      </tr>
+      <tr>
+        <td><span class="code">O4_1X</span><br><small style="color:#64748B">Octet 4: '1' + [0-9]</small></td>
+        <td><span class="badge badge-accept">Accepting</span></td>
+        <td><strong style="color:#0F172A">0, 1, 2, 3, 4, 5, 6, 7, 8, 9</strong></td>
+        <td><span class="code">O4_ZERO</span><br><small style="color:#64748B">Octet 4: Single '0'</small></td>
+        <td><span class="badge badge-accept">Accepting</span></td>
+      </tr>
+      <tr>
+        <td><span class="code">O4_1X</span><br><small style="color:#64748B">Octet 4: '1' + [0-9]</small></td>
+        <td><span class="badge badge-accept">Accepting</span></td>
+        <td><strong style="color:#0F172A">., [Other/Invalid]</strong></td>
+        <td><span class="code">TRAP_DEAD</span><br><small style="color:#64748B">Trap/Dead State</small></td>
+        <td><span class="badge badge-dead">Dead</span></td>
+      </tr>
+      <tr>
+        <td><span class="code">O4_2</span><br><small style="color:#64748B">Octet 4: Digit '2'</small></td>
+        <td><span class="badge badge-accept">Accepting</span></td>
+        <td><strong style="color:#0F172A">0, 1, 2, 3, 4</strong></td>
+        <td><span class="code">O4_1X</span><br><small style="color:#64748B">Octet 4: '1' + [0-9]</small></td>
+        <td><span class="badge badge-accept">Accepting</span></td>
+      </tr>
+      <tr>
+        <td><span class="code">O4_2</span><br><small style="color:#64748B">Octet 4: Digit '2'</small></td>
+        <td><span class="badge badge-accept">Accepting</span></td>
+        <td><strong style="color:#0F172A">5</strong></td>
+        <td><span class="code">O4_2_5</span><br><small style="color:#64748B">Octet 4: '25'</small></td>
+        <td><span class="badge badge-accept">Accepting</span></td>
+      </tr>
+      <tr>
+        <td><span class="code">O4_2</span><br><small style="color:#64748B">Octet 4: Digit '2'</small></td>
+        <td><span class="badge badge-accept">Accepting</span></td>
+        <td><strong style="color:#0F172A">6, 7, 8, 9</strong></td>
+        <td><span class="code">O4_ZERO</span><br><small style="color:#64748B">Octet 4: Single '0'</small></td>
+        <td><span class="badge badge-accept">Accepting</span></td>
+      </tr>
+      <tr>
+        <td><span class="code">O4_2</span><br><small style="color:#64748B">Octet 4: Digit '2'</small></td>
+        <td><span class="badge badge-accept">Accepting</span></td>
+        <td><strong style="color:#0F172A">., [Other/Invalid]</strong></td>
+        <td><span class="code">TRAP_DEAD</span><br><small style="color:#64748B">Trap/Dead State</small></td>
+        <td><span class="badge badge-dead">Dead</span></td>
+      </tr>
+      <tr>
+        <td><span class="code">O4_2_5</span><br><small style="color:#64748B">Octet 4: '25'</small></td>
+        <td><span class="badge badge-accept">Accepting</span></td>
+        <td><strong style="color:#0F172A">0, 1, 2, 3, 4, 5</strong></td>
+        <td><span class="code">O4_ZERO</span><br><small style="color:#64748B">Octet 4: Single '0'</small></td>
+        <td><span class="badge badge-accept">Accepting</span></td>
+      </tr>
+      <tr>
+        <td><span class="code">O4_2_5</span><br><small style="color:#64748B">Octet 4: '25'</small></td>
+        <td><span class="badge badge-accept">Accepting</span></td>
+        <td><strong style="color:#0F172A">6, 7, 8, 9, ., [Other/Invalid]</strong></td>
+        <td><span class="code">TRAP_DEAD</span><br><small style="color:#64748B">Trap/Dead State</small></td>
+        <td><span class="badge badge-dead">Dead</span></td>
+      </tr>
+    </tbody>
+  </table>
+</body>
+</html>
