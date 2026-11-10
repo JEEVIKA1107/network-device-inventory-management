@@ -3,8 +3,9 @@ services:
     name: nettrack-dfa-backend
     env: node
     plan: free
-    buildCommand: cd backend && npm install
-    startCommand: cd backend && npm start
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: npm start
     healthCheckPath: /api/health
     envVars:
       - key: NODE_ENV
@@ -18,7 +19,7 @@ services:
       - key: JWT_EXPIRES_IN
         value: 7d
       - key: CORS_ORIGIN
-        sync: false
+        value: "*"
       - key: ENABLE_LIVE_NETWORK_CHECKS
         value: "true"
       - key: NETWORK_CHECK_TIMEOUT_MS
