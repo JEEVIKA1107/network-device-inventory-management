@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import {
   Users,
   Shield,
@@ -16,7 +17,22 @@ export default function UserManagement() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [updatingId, setUpdatingId] = useState(null);
-  const { user: currentUser } = useAuth();
+  const { user: currentUser, isAdmin } = useAuth();
+
+  if (!isAdmin) {
+    return (
+      <div className="card" style={{ padding: '36px', textAlign: 'center', maxWidth: '500px', margin: '40px auto' }}>
+        <Shield size={48} color="#EF4444" style={{ margin: '0 auto 16px auto' }} />
+        <h3 style={{ fontSize: '1.2rem', fontWeight: 700, color: '#142D4E' }}>Access Restricted</h3>
+        <p style={{ fontSize: '0.875rem', color: '#64748B', marginTop: '8px' }}>
+          User governance and role assignment require Central IT Administrator privileges.
+        </p>
+        <Link to="/dashboard" className="btn btn-primary" style={{ marginTop: '20px', display: 'inline-flex' }}>
+          Return to Dashboard
+        </Link>
+      </div>
+    );
+  }
 
   const fetchUsers = async () => {
     try {

@@ -131,12 +131,10 @@ export default function DeviceInventory() {
           </p>
         </div>
 
-        {isStaff && (
-          <Link to="/devices/add" className="btn btn-primary" style={{ gap: '8px' }}>
-            <Plus size={16} />
-            <span>Register New Device</span>
-          </Link>
-        )}
+        <Link to="/devices/add" className="btn btn-primary" style={{ gap: '8px' }}>
+          <Plus size={16} />
+          <span>Register New Device</span>
+        </Link>
       </div>
 
       {/* Filter and Search Bar */}

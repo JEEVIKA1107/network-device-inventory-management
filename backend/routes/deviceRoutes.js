@@ -15,7 +15,7 @@ router.get('/check-duplicate', protect, checkDuplicateIP);
 router
   .route('/')
   .get(protect, getDevices)
-  .post(protect, authorize('Admin', 'Faculty / IT Staff'), createDevice);
+  .post(protect, authorize('Admin', 'Faculty / IT Staff', 'Viewer'), createDevice);
 
 router
   .route('/:id')

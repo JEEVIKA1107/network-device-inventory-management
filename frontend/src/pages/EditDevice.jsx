@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { ArrowLeft, Save, AlertCircle, CheckCircle2, XCircle } from 'lucide-react';
+import { ArrowLeft, Save, AlertCircle, CheckCircle2, XCircle, Shield } from 'lucide-react';
 import api from '../api/axiosClient';
+import { useAuth } from '../context/AuthContext';
 
 export default function EditDevice() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { isAdmin, isStaff } = useAuth();
 
   const [formData, setFormData] = useState({
     deviceId: '',
@@ -136,6 +138,26 @@ export default function EditDevice() {
       setSubmitting(false);
     }
   };
+
+  if (!isAdmin && !isStaff) {
+    return (
+      <div className="card" style={{ padding: '36px', textAlign: 'center', maxWidth: '520px', margin: '40px auto' }}>
+        <Shield size={48} color="#EF4444" style={{ margin: '0 auto 16px auto' }} />
+        <h3 style={{ fontSize: '1.2rem', fontWeight: 700, color: '#142D4E' }}>Edit Permission Restricted</h3>
+        <p style={{ fontSize: '0.875rem', color: '#64748B', marginTop: '8px', lineHeight: 1.5 }}>
+          Viewers are permitted to register new network devices, but modifying existing campus infrastructure requires Faculty / IT Staff or Admin authorization.
+        </p>
+        <div style={{ display: 'flex', justifyContent: 'center', gap: '12px', marginTop: '20px' }}>
+          <Link to={`/devices/${id}`} className="btn btn-outline btn-sm">
+            View Device Details
+          </Link>
+          <Link to="/devices" className="btn btn-primary btn-sm">
+            Back to Inventory
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   if (loading) {
     return <div style={{ padding: '40px', textAlign: 'center', color: '#64748B' }}>Loading device record...</div>;

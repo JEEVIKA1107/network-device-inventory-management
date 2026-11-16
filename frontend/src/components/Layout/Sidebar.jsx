@@ -18,12 +18,15 @@ import {
   Users,
   Settings,
   LogOut,
-  Radio
+  Radio,
+  Info,
+  Shield,
+  UserCheck
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
 export default function Sidebar() {
-  const { user, logout, isAdmin } = useAuth();
+  const { user, logout, isAdmin, isFacultyStaff, isViewer } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -31,11 +34,37 @@ export default function Sidebar() {
     navigate('/login');
   };
 
-  const navGroups = [
+  // Viewer / Guest Role Navigation
+  const viewerGroups = [
     {
-      group: 'OVERVIEW',
+      group: 'PORTAL OVERVIEW',
       items: [
-        { label: 'Dashboard', path: '/dashboard', icon: LayoutDashboard }
+        { label: 'User Dashboard', path: '/dashboard', icon: LayoutDashboard }
+      ]
+    },
+    {
+      group: 'EQUIPMENT & INVENTORY',
+      items: [
+        { label: 'Device Inventory', path: '/devices', icon: Server },
+        { label: 'Register Device', path: '/devices/add', icon: PlusCircle },
+        { label: 'Network Topology', path: '/topology', icon: Network }
+      ]
+    },
+    {
+      group: 'NETWORK REFERENCE',
+      items: [
+        { label: 'Network Info & Scopes', path: '/network-info', icon: Info },
+        { label: 'Subnet Calculator', path: '/subnet-calculator', icon: Calculator }
+      ]
+    }
+  ];
+
+  // Faculty / IT Staff Operational Role Navigation
+  const staffGroups = [
+    {
+      group: 'OPERATIONS',
+      items: [
+        { label: 'Staff Dashboard', path: '/dashboard', icon: LayoutDashboard }
       ]
     },
     {
@@ -47,7 +76,48 @@ export default function Sidebar() {
       ]
     },
     {
-      group: 'IP MANAGEMENT',
+      group: 'IP & AUTOMATA',
+      items: [
+        { label: 'IPv4 Validator', path: '/validator', icon: ShieldCheck },
+        { label: 'DFA Simulator', path: '/dfa-simulator', icon: Cpu },
+        { label: 'Subnet Calculator', path: '/subnet-calculator', icon: Calculator }
+      ]
+    },
+    {
+      group: 'MONITORING & TELEMETRY',
+      items: [
+        { label: 'Network Status', path: '/monitoring', icon: Activity },
+        { label: 'Connectivity History', path: '/connectivity-history', icon: History }
+      ]
+    },
+    {
+      group: 'REPORTS & AUDIT',
+      items: [
+        { label: 'Analytics & Reports', path: '/reports', icon: BarChart3 },
+        { label: 'Validation History', path: '/validation-history', icon: FileCheck2 },
+        { label: 'Export Inventory', path: '/export-reports', icon: DownloadCloud }
+      ]
+    }
+  ];
+
+  // System Administrator Full Role Navigation
+  const adminGroups = [
+    {
+      group: 'OVERVIEW',
+      items: [
+        { label: 'Admin Dashboard', path: '/dashboard', icon: LayoutDashboard }
+      ]
+    },
+    {
+      group: 'DEVICE MANAGEMENT',
+      items: [
+        { label: 'Device Inventory', path: '/devices', icon: Server },
+        { label: 'Add Device', path: '/devices/add', icon: PlusCircle },
+        { label: 'Network Topology', path: '/topology', icon: Network }
+      ]
+    },
+    {
+      group: 'IP MANAGEMENT & FLAT',
       items: [
         { label: 'IPv4 Validator', path: '/validator', icon: ShieldCheck },
         { label: 'DFA Simulator', path: '/dfa-simulator', icon: Cpu },
@@ -64,7 +134,7 @@ export default function Sidebar() {
       ]
     },
     {
-      group: 'REPORTS',
+      group: 'REPORTS & AUDIT',
       items: [
         { label: 'Analytics', path: '/reports', icon: BarChart3 },
         { label: 'Validation History', path: '/validation-history', icon: FileCheck2 },
@@ -74,11 +144,13 @@ export default function Sidebar() {
     {
       group: 'ADMINISTRATION',
       items: [
-        ...(isAdmin ? [{ label: 'User Management', path: '/users', icon: Users }] : []),
-        { label: 'Settings', path: '/settings', icon: Settings }
+        { label: 'User Management', path: '/users', icon: Users },
+        { label: 'Scopes & Settings', path: '/settings', icon: Settings }
       ]
     }
   ];
+
+  const navGroups = isAdmin ? adminGroups : (isFacultyStaff ? staffGroups : viewerGroups);
 
   return (
     <aside className="sidebar">
@@ -148,8 +220,20 @@ export default function Sidebar() {
             <div style={{ fontSize: '0.85rem', fontWeight: 600, color: '#FFFFFF', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
               {user?.name || 'Administrator'}
             </div>
-            <div style={{ fontSize: '0.72rem', color: '#38BDF8' }}>
-              {user?.role || 'Admin'}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '3px' }}>
+              <span
+                style={{
+                  fontSize: '0.68rem',
+                  fontWeight: 600,
+                  padding: '2px 8px',
+                  borderRadius: '12px',
+                  background: isAdmin ? 'rgba(56, 189, 248, 0.2)' : isFacultyStaff ? 'rgba(16, 185, 129, 0.2)' : 'rgba(168, 85, 247, 0.2)',
+                  color: isAdmin ? '#38BDF8' : isFacultyStaff ? '#34D399' : '#C084FC',
+                  border: `1px solid ${isAdmin ? 'rgba(56, 189, 248, 0.4)' : isFacultyStaff ? 'rgba(16, 185, 129, 0.4)' : 'rgba(168, 85, 247, 0.4)'}`
+                }}
+              >
+                {user?.role || 'Viewer'}
+              </span>
             </div>
           </div>
           <button
