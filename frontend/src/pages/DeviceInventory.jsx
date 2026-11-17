@@ -1,21 +1,16 @@
+
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import {
-  Server,
   Search,
-  Filter,
   Plus,
   Trash2,
   Edit,
   Eye,
   Activity,
-  ArrowUpDown,
-  CheckCircle,
-  XCircle,
   AlertCircle,
   ChevronLeft,
-  ChevronRight,
-  RefreshCw
+  ChevronRight
 } from 'lucide-react';
 import api from '../api/axiosClient';
 import { useAuth } from '../context/AuthContext';
@@ -32,19 +27,19 @@ export default function DeviceInventory() {
   const [totalPages, setTotalPages] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
 
-  // Ping action state
   const [probingId, setProbingId] = useState(null);
   const [probeResult, setProbeResult] = useState(null);
 
-  // Delete modal state
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [deleting, setDeleting] = useState(false);
 
-  const { isAdmin, isStaff } = useAuth();
+  const { isAdmin } = useAuth();
 
+  // Fetch devices from backend
   const fetchDevices = async () => {
     try {
       setLoading(true);
+
       const params = {
         search,
         deviceType,
@@ -54,7 +49,9 @@ export default function DeviceInventory() {
         page,
         limit: 10
       };
+
       const res = await api.get('/devices', { params });
+
       if (res.data.success) {
         setDevices(res.data.devices);
         setTotalPages(res.data.totalPages);
@@ -71,30 +68,37 @@ export default function DeviceInventory() {
     fetchDevices();
   }, [search, deviceType, connectionStatus, sortBy, order, page]);
 
+  // Admin-only network probe
   const handleManualProbe = async (deviceId) => {
+    if (!isAdmin) return;
+
     try {
       setProbingId(deviceId);
       setProbeResult(null);
+
       const res = await api.post(`/monitoring/check/${deviceId}`);
+
       if (res.data.success) {
         setProbeResult({
-          deviceId,
           status: res.data.result.status,
           responseTime: res.data.result.responseTime,
           message: res.data.result.errorMessage || 'Host reachable'
         });
-        // Update device in list
+
         setDevices((prev) =>
-          prev.map((d) =>
-            d._id === deviceId
-              ? { ...d, connectionStatus: res.data.result.status, lastCheckedAt: new Date() }
-              : d
+          prev.map((device) =>
+            device._id === deviceId
+              ? {
+                  ...device,
+                  connectionStatus: res.data.result.status,
+                  lastCheckedAt: new Date()
+                }
+              : device
           )
         );
       }
     } catch (err) {
       setProbeResult({
-        deviceId,
         status: 'Offline',
         responseTime: 0,
         message: err.response?.data?.message || 'Probe request failed'
@@ -104,13 +108,17 @@ export default function DeviceInventory() {
     }
   };
 
+  // Admin-only device deletion
   const confirmDelete = async () => {
-    if (!deleteTarget) return;
+    if (!isAdmin || !deleteTarget) return;
+
     try {
       setDeleting(true);
+
       await api.delete(`/devices/${deleteTarget._id}`);
+
       setDeleteTarget(null);
-      fetchDevices();
+      await fetchDevices();
     } catch (err) {
       alert(err.response?.data?.message || 'Failed to delete device');
     } finally {
@@ -120,29 +128,61 @@ export default function DeviceInventory() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-      {/* Header & Quick Action */}
-      <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: '16px' }}>
+
+      {/* Header */}
+      <div
+        style={{
+          display: 'flex',
+          flexWrap: 'wrap',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: '16px'
+        }}
+      >
         <div>
           <h2 style={{ fontSize: '1.4rem', fontWeight: 800, color: '#142D4E' }}>
             Device Inventory
           </h2>
+
           <p style={{ fontSize: '0.85rem', color: '#64748B' }}>
-            Managing {totalCount} registered campus devices with verified canonical IPv4 addresses
+            {totalCount} registered campus devices
           </p>
         </div>
 
-        <Link to="/devices/add" className="btn btn-primary" style={{ gap: '8px' }}>
-          <Plus size={16} />
-          <span>Register New Device</span>
-        </Link>
+        {/* Only Admin can register devices */}
+        {isAdmin && (
+          <Link
+            to="/devices/add"
+            className="btn btn-primary"
+            style={{ gap: '8px' }}
+          >
+            <Plus size={16} />
+            <span>Register New Device</span>
+          </Link>
+        )}
       </div>
 
-      {/* Filter and Search Bar */}
+      {/* Search and Filters */}
       <div className="card" style={{ padding: '16px 20px' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '14px', alignItems: 'center' }}>
-          {/* Search box */}
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+            gap: '14px',
+            alignItems: 'center'
+          }}
+        >
           <div style={{ position: 'relative' }}>
-            <Search size={16} color="#94A3B8" style={{ position: 'absolute', left: '12px', top: '12px' }} />
+            <Search
+              size={16}
+              color="#94A3B8"
+              style={{
+                position: 'absolute',
+                left: '12px',
+                top: '12px'
+              }}
+            />
+
             <input
               type="text"
               placeholder="Search ID, name, IP, MAC..."
@@ -156,71 +196,68 @@ export default function DeviceInventory() {
             />
           </div>
 
-          {/* Device Type Filter */}
-          <div>
-            <select
-              value={deviceType}
-              onChange={(e) => {
-                setDeviceType(e.target.value);
-                setPage(1);
-              }}
-              className="form-select"
-            >
-              <option value="ALL">All Device Categories</option>
-              <option value="Router">Router</option>
-              <option value="Switch">Switch</option>
-              <option value="Computer">Computer</option>
-              <option value="Server">Server</option>
-              <option value="Printer">Printer</option>
-              <option value="Wireless Access Point">Wireless Access Point</option>
-            </select>
-          </div>
+          <select
+            value={deviceType}
+            onChange={(e) => {
+              setDeviceType(e.target.value);
+              setPage(1);
+            }}
+            className="form-select"
+          >
+            <option value="ALL">All Device Categories</option>
+            <option value="Router">Router</option>
+            <option value="Switch">Switch</option>
+            <option value="Computer">Computer</option>
+            <option value="Server">Server</option>
+            <option value="Printer">Printer</option>
+            <option value="Wireless Access Point">
+              Wireless Access Point
+            </option>
+          </select>
 
-          {/* Status Filter */}
-          <div>
-            <select
-              value={connectionStatus}
-              onChange={(e) => {
-                setConnectionStatus(e.target.value);
-                setPage(1);
-              }}
-              className="form-select"
-            >
-              <option value="ALL">All Reachability Statuses</option>
-              <option value="Online">Online</option>
-              <option value="Offline">Offline</option>
-              <option value="Unknown">Unknown</option>
-            </select>
-          </div>
+          <select
+            value={connectionStatus}
+            onChange={(e) => {
+              setConnectionStatus(e.target.value);
+              setPage(1);
+            }}
+            className="form-select"
+          >
+            <option value="ALL">All Reachability Statuses</option>
+            <option value="Online">Online</option>
+            <option value="Offline">Offline</option>
+            <option value="Unknown">Unknown</option>
+          </select>
 
-          {/* Sort By */}
-          <div>
-            <select
-              value={`${sortBy}-${order}`}
-              onChange={(e) => {
-                const [sb, ord] = e.target.value.split('-');
-                setSortBy(sb);
-                setOrder(ord);
-              }}
-              className="form-select"
-            >
-              <option value="createdAt-desc">Newest Registered</option>
-              <option value="createdAt-asc">Oldest Registered</option>
-              <option value="deviceName-asc">Name (A - Z)</option>
-              <option value="deviceId-asc">Device ID</option>
-              <option value="ipAddress-asc">IPv4 Address</option>
-            </select>
-          </div>
+          <select
+            value={`${sortBy}-${order}`}
+            onChange={(e) => {
+              const [sb, ord] = e.target.value.split('-');
+              setSortBy(sb);
+              setOrder(ord);
+            }}
+            className="form-select"
+          >
+            <option value="createdAt-desc">Newest Registered</option>
+            <option value="createdAt-asc">Oldest Registered</option>
+            <option value="deviceName-asc">Name (A - Z)</option>
+            <option value="deviceId-asc">Device ID</option>
+            <option value="ipAddress-asc">IPv4 Address</option>
+          </select>
         </div>
       </div>
 
-      {/* Probe feedback banner if active */}
-      {probeResult && (
+      {/* Probe Result */}
+      {probeResult && isAdmin && (
         <div
           style={{
-            background: probeResult.status === 'Online' ? '#ECFDF5' : '#FEF2F2',
-            border: `1px solid ${probeResult.status === 'Online' ? '#A7F3D0' : '#FECACA'}`,
-            color: probeResult.status === 'Online' ? '#065F46' : '#991B1B',
+            background:
+              probeResult.status === 'Online' ? '#ECFDF5' : '#FEF2F2',
+            border: `1px solid ${
+              probeResult.status === 'Online' ? '#A7F3D0' : '#FECACA'
+            }`,
+            color:
+              probeResult.status === 'Online' ? '#065F46' : '#991B1B',
             padding: '12px 18px',
             borderRadius: '8px',
             fontSize: '0.85rem',
@@ -229,22 +266,27 @@ export default function DeviceInventory() {
             justifyContent: 'space-between'
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <Activity size={16} />
-            <span>
-              Host Probe Result: <strong>{probeResult.status}</strong> ({probeResult.responseTime}ms) — {probeResult.message}
-            </span>
-          </div>
+          <span>
+            <strong>{probeResult.status}</strong>
+            {' '}({probeResult.responseTime}ms) — {probeResult.message}
+          </span>
+
           <button
             onClick={() => setProbeResult(null)}
-            style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'inherit', fontWeight: 'bold' }}
+            style={{
+              background: 'transparent',
+              border: 'none',
+              cursor: 'pointer',
+              color: 'inherit',
+              fontWeight: 'bold'
+            }}
           >
             ✕
           </button>
         </div>
       )}
 
-      {/* Main Inventory Table */}
+      {/* Device Inventory Table */}
       <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
         <div className="table-container" style={{ border: 'none' }}>
           <table className="data-table">
@@ -260,65 +302,123 @@ export default function DeviceInventory() {
                 <th style={{ textAlign: 'right' }}>Actions</th>
               </tr>
             </thead>
+
             <tbody>
               {devices.length > 0 ? (
                 devices.map((dev) => (
                   <tr key={dev._id}>
                     <td>
-                      <span className="mono" style={{ fontWeight: 700, color: '#142D4E' }}>
+                      <span
+                        className="mono"
+                        style={{ fontWeight: 700, color: '#142D4E' }}
+                      >
                         {dev.deviceId}
                       </span>
                     </td>
+
                     <td>
                       <Link
                         to={`/devices/${dev._id}`}
-                        style={{ fontWeight: 600, color: '#2563EB', textDecoration: 'none' }}
+                        style={{
+                          fontWeight: 600,
+                          color: '#2563EB',
+                          textDecoration: 'none'
+                        }}
                       >
                         {dev.deviceName}
                       </Link>
+
                       <div style={{ fontSize: '0.72rem', color: '#64748B' }}>
                         {dev.manufacturer} {dev.model}
                       </div>
                     </td>
+
                     <td>
-                      <span className="badge badge-info">{dev.deviceType}</span>
+                      <span className="badge badge-info">
+                        {dev.deviceType}
+                      </span>
                     </td>
+
                     <td>
-                      <span className="mono" style={{ fontWeight: 600, color: '#0F172A' }}>
+                      <span
+                        className="mono"
+                        style={{ fontWeight: 600, color: '#0F172A' }}
+                      >
                         {dev.ipAddress}
                       </span>
+
                       <div style={{ fontSize: '0.7rem', color: '#64748B' }}>
                         {dev.networkScopeId?.name || 'Default Scope'}
                       </div>
                     </td>
+
                     <td>
-                      <span className="mono" style={{ fontSize: '0.775rem', color: '#475569' }}>
+                      <span
+                        className="mono"
+                        style={{ fontSize: '0.775rem', color: '#475569' }}
+                      >
                         {dev.macAddress || '—'}
                       </span>
                     </td>
+
                     <td>
-                      <div style={{ fontSize: '0.825rem', fontWeight: 500, color: '#1E293B' }}>{dev.department}</div>
-                      <div style={{ fontSize: '0.72rem', color: '#64748B' }}>{dev.laboratory}</div>
+                      <div
+                        style={{
+                          fontSize: '0.825rem',
+                          fontWeight: 500,
+                          color: '#1E293B'
+                        }}
+                      >
+                        {dev.department}
+                      </div>
+
+                      <div style={{ fontSize: '0.72rem', color: '#64748B' }}>
+                        {dev.laboratory}
+                      </div>
                     </td>
+
                     <td>
-                      <span className={`badge ${dev.connectionStatus === 'Online' ? 'badge-online' : dev.connectionStatus === 'Offline' ? 'badge-offline' : 'badge-unknown'}`}>
+                      <span
+                        className={`badge ${
+                          dev.connectionStatus === 'Online'
+                            ? 'badge-online'
+                            : dev.connectionStatus === 'Offline'
+                              ? 'badge-offline'
+                              : 'badge-unknown'
+                        }`}
+                      >
                         {dev.connectionStatus}
                       </span>
                     </td>
-                    <td style={{ textAlign: 'right' }}>
-                      <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
-                        {/* Probe Button */}
-                        <button
-                          onClick={() => handleManualProbe(dev._id)}
-                          disabled={probingId === dev._id}
-                          className="btn btn-outline btn-sm"
-                          title="Probe network connectivity"
-                          style={{ padding: '6px' }}
-                        >
-                          <Activity size={14} className={probingId === dev._id ? 'spin' : ''} color="#2563EB" />
-                        </button>
 
-                        {/* View Details */}
+                    <td style={{ textAlign: 'right' }}>
+                      <div
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '6px'
+                        }}
+                      >
+                        {/* Admin-only Probe */}
+                        {isAdmin && (
+                          <button
+                            onClick={() => handleManualProbe(dev._id)}
+                            disabled={probingId === dev._id}
+                            className="btn btn-outline btn-sm"
+                            title="Probe network connectivity"
+                            style={{ padding: '6px' }}
+                          >
+                            <Activity
+                              size={14}
+                              className={
+                                probingId === dev._id ? 'spin' : ''
+                              }
+                              color="#2563EB"
+                            />
+                          </button>
+                        )}
+
+                        {/* All users can view details */}
                         <Link
                           to={`/devices/${dev._id}`}
                           className="btn btn-outline btn-sm"
@@ -328,8 +428,8 @@ export default function DeviceInventory() {
                           <Eye size={14} color="#475569" />
                         </Link>
 
-                        {/* Edit Device */}
-                        {isStaff && (
+                        {/* Admin-only Edit */}
+                        {isAdmin && (
                           <Link
                             to={`/devices/edit/${dev._id}`}
                             className="btn btn-outline btn-sm"
@@ -340,7 +440,7 @@ export default function DeviceInventory() {
                           </Link>
                         )}
 
-                        {/* Delete Device */}
+                        {/* Admin-only Delete */}
                         {isAdmin && (
                           <button
                             onClick={() => setDeleteTarget(dev)}
@@ -357,8 +457,17 @@ export default function DeviceInventory() {
                 ))
               ) : (
                 <tr>
-                  <td colSpan={8} style={{ textAlign: 'center', padding: '36px', color: '#94A3B8' }}>
-                    {loading ? 'Fetching device inventory from database...' : 'No network devices found matching current filters.'}
+                  <td
+                    colSpan={8}
+                    style={{
+                      textAlign: 'center',
+                      padding: '36px',
+                      color: '#94A3B8'
+                    }}
+                  >
+                    {loading
+                      ? 'Fetching device inventory from database...'
+                      : 'No network devices found matching current filters.'}
                   </td>
                 </tr>
               )}
@@ -366,11 +475,22 @@ export default function DeviceInventory() {
           </table>
         </div>
 
-        {/* Pagination Bar */}
-        <div style={{ padding: '14px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '1px solid #E2E8F0', background: '#F8FAFC' }}>
+        {/* Pagination */}
+        <div
+          style={{
+            padding: '14px 20px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            borderTop: '1px solid #E2E8F0',
+            background: '#F8FAFC'
+          }}
+        >
           <div style={{ fontSize: '0.825rem', color: '#64748B' }}>
-            Showing page <strong>{page}</strong> of <strong>{totalPages}</strong> ({totalCount} total devices)
+            Showing page <strong>{page}</strong> of{' '}
+            <strong>{totalPages}</strong> ({totalCount} total devices)
           </div>
+
           <div style={{ display: 'flex', gap: '8px' }}>
             <button
               onClick={() => setPage((p) => Math.max(1, p - 1))}
@@ -380,6 +500,7 @@ export default function DeviceInventory() {
               <ChevronLeft size={16} />
               <span>Previous</span>
             </button>
+
             <button
               onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
               disabled={page >= totalPages}
@@ -392,8 +513,8 @@ export default function DeviceInventory() {
         </div>
       </div>
 
-      {/* Confirmation Dialog for Delete */}
-      {deleteTarget && (
+      {/* Admin-only Delete Confirmation */}
+      {deleteTarget && isAdmin && (
         <div
           style={{
             position: 'fixed',
@@ -408,17 +529,68 @@ export default function DeviceInventory() {
             zIndex: 9999
           }}
         >
-          <div className="card" style={{ maxWidth: '440px', width: '90%', padding: '24px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '14px' }}>
-              <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: '#FEE2E2', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div
+            className="card"
+            style={{
+              maxWidth: '440px',
+              width: '90%',
+              padding: '24px'
+            }}
+          >
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '12px',
+                marginBottom: '14px'
+              }}
+            >
+              <div
+                style={{
+                  width: '40px',
+                  height: '40px',
+                  borderRadius: '50%',
+                  background: '#FEE2E2',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}
+              >
                 <AlertCircle size={22} color="#EF4444" />
               </div>
-              <h3 style={{ fontSize: '1.2rem', fontWeight: 700, color: '#142D4E' }}>Confirm Device Deletion</h3>
+
+              <h3
+                style={{
+                  fontSize: '1.2rem',
+                  fontWeight: 700,
+                  color: '#142D4E'
+                }}
+              >
+                Confirm Device Deletion
+              </h3>
             </div>
-            <p style={{ fontSize: '0.875rem', color: '#475569', lineHeight: 1.5, marginBottom: '20px' }}>
-              Are you sure you want to delete <strong>{deleteTarget.deviceName}</strong> ({deleteTarget.deviceId})? All associated network connections will also be pruned.
+
+            <p
+              style={{
+                fontSize: '0.875rem',
+                color: '#475569',
+                lineHeight: 1.5,
+                marginBottom: '20px'
+              }}
+            >
+              Are you sure you want to delete{' '}
+              <strong>{deleteTarget.deviceName}</strong> (
+              {deleteTarget.deviceId})? All associated network connections
+              will also be pruned.
             </p>
-            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
+
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'flex-end',
+                gap: '10px'
+              }}
+            >
               <button
                 onClick={() => setDeleteTarget(null)}
                 disabled={deleting}
@@ -426,6 +598,7 @@ export default function DeviceInventory() {
               >
                 Cancel
               </button>
+
               <button
                 onClick={confirmDelete}
                 disabled={deleting}

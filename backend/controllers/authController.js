@@ -1,21 +1,20 @@
+
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const ActivityLog = require('../models/ActivityLog');
 
-// Generate JWT token helper
+// Generate JWT token
 const generateToken = (id) => {
   return jwt.sign(
     { id },
-    process.env.JWT_SECRET || 'nettrack_dfa_development_jwt_secret_key_academic_2026',
+    process.env.JWT_SECRET,
     {
       expiresIn: process.env.JWT_EXPIRES_IN || '7d'
     }
   );
 };
 
-// @desc    Register a new user
-// @route   POST /api/auth/register
-// @access  Public (or Admin)
+// Register a new user (Admin only through protected route)
 exports.register = async (req, res, next) => {
   try {
     const { name, email, password, role, department } = req.body;
@@ -27,7 +26,28 @@ exports.register = async (req, res, next) => {
       });
     }
 
-    const existingUser = await User.findOne({ email: email.toLowerCase() });
+    if (password.length < 8) {
+      return res.status(400).json({
+        success: false,
+        message: 'Password must contain at least 8 characters'
+      });
+    }
+
+    const allowedRoles = ['Admin', 'Faculty / IT Staff', 'Viewer'];
+
+    if (!role || !allowedRoles.includes(role)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Please provide a valid user role'
+      });
+    }
+
+    const normalizedEmail = email.trim().toLowerCase();
+
+    const existingUser = await User.findOne({
+      email: normalizedEmail
+    });
+
     if (existingUser) {
       return res.status(400).json({
         success: false,
@@ -36,32 +56,27 @@ exports.register = async (req, res, next) => {
     }
 
     const passwordHash = await User.hashPassword(password);
-    const userRole = role && ['Admin', 'Faculty / IT Staff', 'Viewer'].includes(role)
-      ? role
-      : 'Viewer';
 
     const user = await User.create({
-      name,
-      email: email.toLowerCase(),
+      name: name.trim(),
+      email: normalizedEmail,
       passwordHash,
-      role: userRole,
+      role,
       department: department || 'Information Technology'
     });
-
-    const token = generateToken(user._id);
 
     await ActivityLog.create({
       userId: user._id,
       userName: user.name,
       userRole: user.role,
       action: 'USER_REGISTER',
-      description: `New user '${user.name}' registered with role '${user.role}'`,
+      description: `Admin created user '${user.name}' with role '${user.role}'`,
       targetId: user._id.toString()
     });
 
-    res.status(201).json({
+    return res.status(201).json({
       success: true,
-      token,
+      message: 'User created successfully',
       user: {
         id: user._id,
         name: user.name,
@@ -75,9 +90,7 @@ exports.register = async (req, res, next) => {
   }
 };
 
-// @desc    Authenticate user & get token
-// @route   POST /api/auth/login
-// @access  Public
+// Login
 exports.login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
@@ -89,11 +102,14 @@ exports.login = async (req, res, next) => {
       });
     }
 
-    const user = await User.findOne({ email: email.toLowerCase() });
+    const user = await User.findOne({
+      email: email.trim().toLowerCase()
+    });
+
     if (!user) {
       return res.status(401).json({
         success: false,
-        message: 'Invalid credentials: user not found'
+        message: 'Invalid email or password'
       });
     }
 
@@ -105,10 +121,11 @@ exports.login = async (req, res, next) => {
     }
 
     const isMatch = await user.matchPassword(password);
+
     if (!isMatch) {
       return res.status(401).json({
         success: false,
-        message: 'Invalid credentials: incorrect password'
+        message: 'Invalid email or password'
       });
     }
 
@@ -123,7 +140,7 @@ exports.login = async (req, res, next) => {
       targetId: user._id.toString()
     });
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       token,
       user: {
@@ -139,13 +156,19 @@ exports.login = async (req, res, next) => {
   }
 };
 
-// @desc    Get current user profile
-// @route   GET /api/auth/me
-// @access  Private
+// Get current user profile
 exports.getMe = async (req, res, next) => {
   try {
     const user = await User.findById(req.user.id).select('-passwordHash');
-    res.status(200).json({
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
+      });
+    }
+
+    return res.status(200).json({
       success: true,
       user
     });

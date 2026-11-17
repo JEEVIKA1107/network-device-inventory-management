@@ -1,12 +1,14 @@
+
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 
+// Protect routes: verify JWT and load the logged-in user
 const protect = async (req, res, next) => {
   let token;
 
   if (
     req.headers.authorization &&
-    req.headers.authorization.startsWith('Bearer')
+    req.headers.authorization.startsWith('Bearer ')
   ) {
     token = req.headers.authorization.split(' ')[1];
   }
@@ -14,26 +16,29 @@ const protect = async (req, res, next) => {
   if (!token) {
     return res.status(401).json({
       success: false,
-      message: 'Not authorized to access this resource: No token provided'
+      message: 'Not authorized: No token provided'
     });
   }
 
   try {
     const decoded = jwt.verify(
       token,
-      process.env.JWT_SECRET || 'nettrack_dfa_development_jwt_secret_key_academic_2026'
+      process.env.JWT_SECRET ||
+        'nettrack_dfa_development_jwt_secret_key_academic_2026'
     );
+
     const user = await User.findById(decoded.id).select('-passwordHash');
 
     if (!user || !user.isActive) {
       return res.status(401).json({
         success: false,
-        message: 'The user belonging to this token no longer exists or is disabled'
+        message: 'User does not exist or is disabled'
       });
     }
 
     req.user = user;
-    next();
+    return next();
+
   } catch (error) {
     return res.status(401).json({
       success: false,
@@ -48,10 +53,11 @@ const authorize = (...roles) => {
     if (!req.user || !roles.includes(req.user.role)) {
       return res.status(403).json({
         success: false,
-        message: `User role '${req.user ? req.user.role : 'Unknown'}' is not authorized to perform this action`
+        message: `User role '${req.user ? req.user.role : 'Unknown'}' is not authorized`
       });
     }
-    next();
+
+    return next();
   };
 };
 

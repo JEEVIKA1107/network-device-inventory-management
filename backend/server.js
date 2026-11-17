@@ -1,12 +1,13 @@
+
 const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
 const dotenv = require('dotenv');
 const rateLimit = require('express-rate-limit');
+
 const connectDB = require('./config/db');
 const errorHandler = require('./middleware/errorHandler');
 
-// Load environment variables
 dotenv.config();
 
 // Connect to MongoDB
@@ -14,59 +15,45 @@ connectDB();
 
 const app = express();
 
-// Body Parser
+// Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Enable CORS
-const allowedOrigins = process.env.CORS_ORIGIN
-  ? process.env.CORS_ORIGIN.split(',').map((o) => o.trim())
-  : ['http://localhost:5173', 'http://127.0.0.1:5173'];
-
+// CORS Configuration
 app.use(
   cors({
-    origin: (origin, callback) => {
-      // Allow requests with no origin (e.g. mobile apps, curl, Postman)
-      if (
-        allowedOrigins.includes('*') ||
-        allowedOrigins.indexOf(origin) !== -1 ||
-        process.env.NODE_ENV !== 'production'
-      ) {
-        return callback(null, true);
-      }
-      return callback(null, true); // Permissive in dev/testing environments
-    },
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization']
+    origin: [
+      'http://localhost:5173',
+      'http://localhost:5174',
+      'http://127.0.0.1:5173',
+      'http://127.0.0.1:5174'
+    ],
+    credentials: true
   })
 );
 
-// HTTP request logger in dev
-if (process.env.NODE_ENV !== 'test') {
+// Request logging
+if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
 }
 
-// Rate Limiter for API endpoints
+// API Rate Limiter
 const apiLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 1000, // Limit each IP to 1000 requests per windowMs
-  standardHeaders: true,
-  legacyHeaders: false,
+  windowMs: 15 * 60 * 1000,
+  max: 200,
   message: {
     success: false,
-    message: 'Too many requests created from this IP, please try again after 15 minutes'
+    message: 'Too many requests. Please try again later.'
   }
 });
+
 app.use('/api', apiLimiter);
 
-// Health Check Endpoint
+// Health Check
 app.get('/api/health', (req, res) => {
   res.status(200).json({
-    status: 'online',
-    service: 'NetTrack DFA API',
-    timestamp: new Date().toISOString(),
-    environment: process.env.NODE_ENV || 'development'
+    success: true,
+    message: 'NetTrack DFA API is running'
   });
 });
 
@@ -80,29 +67,26 @@ app.use('/api/reports', require('./routes/reportRoutes'));
 app.use('/api/users', require('./routes/userRoutes'));
 app.use('/api/scopes', require('./routes/scopeRoutes'));
 
-// Root Endpoint
+// Feedback Routes
+app.use('/api/feedback', require('./routes/feedbackRoutes'));
+
+// Root Route
 app.get('/', (req, res) => {
-  res.send('NetTrack DFA Backend API is running smoothly.');
+  res.send('NetTrack DFA Backend API is running');
 });
 
-// Centralized Error Handling Middleware
+// Error Handler
 app.use(errorHandler);
 
+// Start Server
 const PORT = process.env.PORT || 5000;
 
-let server;
 if (process.env.NODE_ENV !== 'test') {
-  server = app.listen(PORT, () => {
-    console.log(`[NetTrack DFA Backend Server running in ${process.env.NODE_ENV || 'development'} on port ${PORT}]`);
+  app.listen(PORT, () => {
+    console.log(
+      `[NetTrack DFA Backend Server running in ${process.env.NODE_ENV || 'development'} on port ${PORT}]`
+    );
   });
 }
-
-// Handle unhandled promise rejections
-process.on('unhandledRejection', (err) => {
-  console.error(`Unhandled Rejection Error: ${err.message}`);
-  if (server) {
-    server.close(() => process.exit(1));
-  }
-});
 
 module.exports = app;

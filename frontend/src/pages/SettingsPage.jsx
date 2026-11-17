@@ -187,27 +187,6 @@ export default function SettingsPage() {
           </form>
         )}
       </div>
-
-      {/* Academic Integration Metadata Card */}
-      <div className="card" style={{ background: '#0F172A', color: '#FFFFFF', border: 'none' }}>
-        <h3 style={{ fontSize: '1.05rem', fontWeight: 700, color: '#38BDF8', marginBottom: '14px' }}>
-          Academic Syllabus Integration Architecture
-        </h3>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '16px', fontSize: '0.825rem', color: '#CBD5E1', lineHeight: 1.6 }}>
-          <div>
-            <strong style={{ color: '#FFFFFF', display: 'block', marginBottom: '4px' }}>FSWD (22ITT51):</strong>
-            MERN stack architecture, React Router v6, protected routes, JWT authentication, bcrypt password hashing, REST APIs and MongoDB Atlas integration.
-          </div>
-          <div>
-            <strong style={{ color: '#FFFFFF', display: 'block', marginBottom: '4px' }}>FLAT Automata Theory:</strong>
-            Canonical IPv4 regular expression, Thompson NFA construction, Powerset subset construction, Hopcroft DFA minimization, and interactive step animator.
-          </div>
-          <div>
-            <strong style={{ color: '#FFFFFF', display: 'block', marginBottom: '4px' }}>Computer Networks (22ITT52):</strong>
-            IPv4 32-bit decimal addressing, CIDR subnet masks, RFC 1918 private scopes, network topology visualization, and socket-based ping reachability checks.
-          </div>
-        </div>
       </div>
-    </div>
   );
 }
