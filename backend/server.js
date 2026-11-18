@@ -20,17 +20,22 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // CORS Configuration
+
+const allowedOrigins = [
+  'http://localhost:5173',
+  'http://localhost:5174',
+  'http://127.0.0.1:5173',
+  'http://127.0.0.1:5174',
+  'https://network-device-inventory-management-kujqucgji.vercel.app'
+];
+
 app.use(
   cors({
-    origin: [
-      'http://localhost:5173',
-      'http://localhost:5174',
-      'http://127.0.0.1:5173',
-      'http://127.0.0.1:5174'
-    ],
+    origin: allowedOrigins,
     credentials: true
   })
 );
+
 
 // Request logging
 if (process.env.NODE_ENV === 'development') {
